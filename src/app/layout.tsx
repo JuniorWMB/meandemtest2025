@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 
 import Link from "next/link";
 
-// trigger page_view every load
+// trigger page_view every load or url changes
 function GA4PageViewTracker() {
   const pathname = usePathname();
   useEffect(() => {

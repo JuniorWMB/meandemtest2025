@@ -44,14 +44,23 @@ export default function CheckoutPage() {
     }));
     const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
+
     // send event GA4 purchase (checkout_success)
     sendGaEvent({
       event_name: 'purchase',
       params: {
-        transaction_id: orderId,
-        currency: 'GBP',
-        value: total,
-        items,
+       transaction_id: orderId,
+       currency: 'GBP',
+       value: total,
+       items,
+       email,
+       line1: address.line1,
+       street: address.street,
+       city: address.city,
+       state: address.state,
+       postcode: address.postcode,
+       country: address.country,
+       
       },
     });
 

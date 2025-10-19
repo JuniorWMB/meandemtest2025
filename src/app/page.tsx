@@ -1,5 +1,4 @@
 "use client";
-import Link from 'next/link';
 
 const products = [
   { id: '1', name: 'Red T-Shirt', price: 19.99 },
