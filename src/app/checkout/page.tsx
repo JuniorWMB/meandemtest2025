@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useOrder } from "../OrderProvider";
 import { useRouter } from "next/navigation";
+import { sendGaEvent } from '@/lib/ga4'; // import GA4
 
 export default function CheckoutPage() {
   const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ export default function CheckoutPage() {
     country: '',
   });
   const [card, setCard] = useState('');
-  const { clearCart } = useCart();
+  const {cart, clearCart} = useCart() //retrieve items from cart
   const { setLastOrder } = useOrder();
   const router = useRouter();
 
@@ -33,6 +34,27 @@ export default function CheckoutPage() {
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     const orderId = 'order_' + Math.random().toString(36).substring(2, 10).toUpperCase();
+
+   // prepare the items to GA4
+    const items = cart.map(i => ({
+      item_id: i.id,
+      item_name: i.name,
+      price: i.price,
+      quantity: i.quantity,
+    }));
+    const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+    // send event GA4 purchase (checkout_success)
+    sendGaEvent({
+      event_name: 'purchase',
+      params: {
+        transaction_id: orderId,
+        currency: 'GBP',
+        value: total,
+        items,
+      },
+    });
+
     // Simulate backend event
     setLastOrder({ order_id: orderId, email, address, card: card.slice(-4) });
     clearCart();

@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "./CartProvider";
 import { OrderProvider } from "./OrderProvider";
+import { usePathname } from "next/navigation";
+import { sendGaEvent } from "@/lib/ga4";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,6 +20,22 @@ import { useCart } from "./CartProvider";
 import { useEffect, useState } from "react";
 
 import Link from "next/link";
+
+// trigger page_view every load
+function GA4PageViewTracker() {
+  const pathname = usePathname();
+  useEffect(() => {
+    sendGaEvent({
+      event_name: 'page_view',
+      params: {
+        page_location: window.location.href,
+        page_title: document.title,
+      },
+    });
+  }, [pathname]);
+  return null;
+}
+
 
 function Header() {
   const { cart } = useCart();
@@ -47,6 +65,7 @@ export default function RootLayout({
           <CartProvider>
             <Header />
             <CookieConsentBanner />
+            <GA4PageViewTracker /> {/*new componant*/}
             {children}
           </CartProvider>
         </OrderProvider>

@@ -9,6 +9,7 @@ const products = [
 
 import { useCart } from './CartProvider';
 import { useState } from 'react';
+import { sendGaEvent } from '@/lib/ga4';
 
 export default function ProductsPage() {
   const { addToCart } = useCart();
@@ -18,6 +19,24 @@ export default function ProductsPage() {
     setLoadingId(product.id);
     await new Promise(res => setTimeout(res, 600 + Math.random() * 600));
     addToCart(product);
+
+    // send a GA4 add_to_cart
+      sendGaEvent({
+    event_name: 'add_to_cart',
+    params: {
+      currency: 'GBP',
+      value: product.price,
+      items: [
+        {
+          item_id: product.id,
+          item_name: product.name,
+          price: product.price,
+          quantity: 1,
+        },
+      ],
+    },
+  });
+
     setLoadingId(null);
   }
 
